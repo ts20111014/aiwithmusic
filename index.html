@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="音乐AI换风格 - 上传音频，AI 一键转谱，多风格重新演绎你的音乐">
+<title>音乐AI换风格 - AI 音乐转谱与风格重制</title>
+<link rel="icon" type="image/png" href="logo.png">
+<style>
+  :root {
+    --bg-deep: #0B1530;
+    --bg-mid: #14204A;
+    --bg-light: #1B2B7A;
+    --accent: #3D7BFF;
+    --accent-light: #6FA0FF;
+    --red: #FF4D4F;
+    --text: #F5F7FF;
+    --text-dim: #A8B4D8;
+    --card-bg: rgba(255,255,255,0.06);
+    --card-border: rgba(255,255,255,0.12);
+    --radius: 16px;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "PingFang SC", "HarmonyOS Sans SC", "Microsoft YaHei", "Segoe UI", sans-serif;
+    background: linear-gradient(160deg, var(--bg-deep) 0%, var(--bg-mid) 55%, var(--bg-light) 100%);
+    color: var(--text);
+    min-height: 100vh;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .container { max-width: 1080px; margin: 0 auto; padding: 0 20px; }
+
+  /* ===== 顶部导航 ===== */
+  header {
+    padding: 18px 0;
+    position: sticky;
+    top: 0;
+    background: rgba(11,21,48,0.82);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255,255,255,0.08);
+    z-index: 10;
+  }
+  .nav-inner { display: flex; align-items: center; justify-content: space-between; }
+  .brand { display: flex; align-items: center; gap: 12px; text-decoration: none; }
+  .brand img { width: 40px; height: 40px; border-radius: 10px; box-shadow: 0 2px 12px rgba(61,123,255,0.35); }
+  .brand-name { font-size: 18px; font-weight: 700; color: var(--text); letter-spacing: 0.5px; }
+  .nav-download {
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    color: #fff; border: none; border-radius: 999px;
+    padding: 10px 22px; font-size: 14px; font-weight: 600; cursor: pointer;
+    transition: transform .15s ease, box-shadow .15s ease;
+  }
+  .nav-download:hover { transform: translateY(-1px); box-shadow: 0 6px 20px rgba(61,123,255,0.45); }
+
+  /* ===== Hero ===== */
+  .hero { text-align: center; padding: 80px 0 48px; }
+  .hero-icon {
+    width: 96px; height: 96px; border-radius: 24px;
+    margin: 0 auto 24px;
+    box-shadow: 0 12px 40px rgba(61,123,255,0.45);
+    background: linear-gradient(135deg, #1B2B7A, #3D7BFF);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 44px; font-weight: 800; color: #fff;
+  }
+  .hero h1 { font-size: 40px; font-weight: 800; letter-spacing: 1px; }
+  .hero .sub { margin-top: 14px; font-size: 18px; color: var(--text-dim); max-width: 620px; margin-left: auto; margin-right: auto; }
+  .hero .badge {
+    display: inline-block; margin-top: 20px;
+    background: rgba(61,123,255,0.16); border: 1px solid rgba(61,123,255,0.4);
+    color: var(--accent-light); border-radius: 999px;
+    padding: 6px 16px; font-size: 13px;
+  }
+  .hero .badge b { color: var(--accent-light); }
+
+  /* ===== 下载区 ===== */
+  .downloads { display: flex; justify-content: center; gap: 16px; margin: 40px 0 8px; flex-wrap: wrap; }
+  .dl-btn {
+    display: inline-flex; align-items: center; gap: 12px;
+    padding: 16px 36px; border-radius: 14px; text-decoration: none;
+    font-size: 16px; font-weight: 700; cursor: pointer; border: none;
+    transition: transform .15s ease, box-shadow .15s ease;
+    min-width: 230px; justify-content: center;
+  }
+  .dl-btn .big { display: block; font-size: 18px; }
+  .dl-btn .small { display: block; font-size: 12px; font-weight: 400; opacity: 0.85; margin-top: 2px; }
+  .dl-android { background: linear-gradient(135deg, #1FA85B, #2BD07A); color: #fff; box-shadow: 0 8px 24px rgba(31,168,91,0.35); }
+  .dl-android:hover { transform: translateY(-2px); box-shadow: 0 12px 30px rgba(31,168,91,0.5); }
+  .dl-ios {
+    background: rgba(255,255,255,0.08); color: var(--text-dim);
+    border: 1px solid rgba(255,255,255,0.2); cursor: not-allowed;
+  }
+  .dl-ios:hover { background: rgba(255,255,255,0.12); }
+  .version-line { text-align: center; color: var(--text-dim); font-size: 13px; margin-top: 14px; }
+  .version-line b { color: var(--text); }
+
+  /* ===== 功能 ===== */
+  .features { padding: 64px 0; }
+  .section-title { text-align: center; font-size: 28px; font-weight: 800; margin-bottom: 40px; }
+  .cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(230px, 1fr)); gap: 18px; }
+  .card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 26px 22px;
+    backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+    transition: transform .15s ease;
+  }
+  .card:hover { transform: translateY(-3px); }
+  .card .ico { font-size: 30px; margin-bottom: 12px; }
+  .card h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+  .card p { font-size: 14px; color: var(--text-dim); }
+
+  /* ===== 流程 ===== */
+  .steps { padding: 0 0 64px; }
+  .step-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 18px; }
+  .step {
+    text-align: center; padding: 26px 18px;
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius); position: relative;
+  }
+  .step .num {
+    width: 40px; height: 40px; margin: 0 auto 14px;
+    border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    background: linear-gradient(135deg, var(--accent), var(--accent-light));
+    font-weight: 800; font-size: 18px;
+  }
+  .step h4 { font-size: 16px; margin-bottom: 6px; }
+  .step p { font-size: 13px; color: var(--text-dim); }
+
+  /* ===== 更新信息 ===== */
+  .changelog { padding: 0 0 64px; }
+  .log-card {
+    background: var(--card-bg); border: 1px solid var(--card-border);
+    border-radius: var(--radius); padding: 26px;
+    max-width: 640px; margin: 0 auto;
+  }
+  .log-card h3 { font-size: 17px; margin-bottom: 12px; }
+  .log-card ul { padding-left: 20px; color: var(--text-dim); font-size: 14px; }
+  .log-card li { margin-bottom: 6px; }
+  .log-card .ver-tag {
+    display: inline-block; background: rgba(61,123,255,0.2);
+    color: var(--accent-light); border-radius: 6px;
+    font-size: 12px; padding: 2px 8px; margin-left: 8px;
+    vertical-align: middle;
+  }
+
+  /* ===== 页脚 ===== */
+  footer { border-top: 1px solid rgba(255,255,255,0.08); padding: 28px 0; text-align: center; color: var(--text-dim); font-size: 13px; }
+  footer a { color: var(--accent-light); text-decoration: none; }
+
+  /* ===== Toast ===== */
+  #toast {
+    position: fixed; left: 50%; bottom: 40px; transform: translateX(-50%) translateY(20px);
+    background: rgba(20,26,46,0.95); color: #fff; border: 1px solid rgba(255,255,255,0.15);
+    padding: 12px 22px; border-radius: 10px; font-size: 14px;
+    opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
+    z-index: 99; white-space: nowrap;
+  }
+  #toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+  /* ===== 响应式 ===== */
+  @media (max-width: 600px) {
+    .hero { padding: 52px 0 32px; }
+    .hero h1 { font-size: 30px; }
+    .hero .sub { font-size: 15px; }
+    .dl-btn { min-width: 100%; }
+    .section-title { font-size: 23px; }
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="container nav-inner">
+    <a class="brand" href="#">
+      <img src="logo.png" alt="音乐AI换风格">
+      <span class="brand-name">音乐AI换风格</span>
+    </a>
+    <button class="nav-download" onclick="downloadAndroid()">立即下载</button>
+  </div>
+</header>
+
+<section class="hero">
+  <div class="container">
+    <div class="hero-icon">♪</div>
+    <h1>音乐AI换风格</h1>
+    <p class="sub">上传一段音频，AI 自动识别音符、一键生成乐谱，再用你喜欢的风格重新演绎——民谣、电子、爵士、钢琴独奏，都由你定。</p>
+    <div class="badge">最新版本 <b id="ver-badge">v--</b></div>
+
+    <div class="downloads">
+      <button class="dl-btn dl-android" id="btn-android" onclick="downloadAndroid()">
+        <span>
+          <span class="big">Android 下载</span>
+          <span class="small">APK · 直接安装</span>
+        </span>
+      </button>
+      <button class="dl-btn dl-ios" id="btn-ios" onclick="iosComingSoon()">
+        <span>
+          <span class="big">App Store</span>
+          <span class="small">敬请期待</span>
+        </span>
+      </button>
+    </div>
+    <div class="version-line">当前版本 <b id="ver-line">v--</b> · <span id="size-line">--</span> · 安卓用户点击上方按钮即可下载安装</div>
+  </div>
+</section>
+
+<section class="features">
+  <div class="container">
+    <h2 class="section-title">核心功能</h2>
+    <div class="cards">
+      <div class="card">
+        <div class="ico">🎼</div>
+        <h3>AI 智能转谱</h3>
+        <p>上传音频自动识别音符，生成可编辑的 MIDI 乐谱，支持在线播放与对比。</p>
+      </div>
+      <div class="card">
+        <div class="ico">🎨</div>
+        <h3>多风格演绎</h3>
+        <p>民谣、电子、爵士、钢琴独奏……一键切换曲风与乐器，重新演绎你的旋律。</p>
+      </div>
+      <div class="card">
+        <div class="ico">📥</div>
+        <h3>文件导出</h3>
+        <p>乐谱与渲染音频一键导出下载，随时带走你的创作成果。</p>
+      </div>
+      <div class="card">
+        <div class="ico">🔒</div>
+        <h3>任务安全托管</h3>
+        <p>转谱任务云端处理，任务码随时找回结果，换设备也不丢失。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="steps">
+  <div class="container">
+    <h2 class="section-title">三步完成创作</h2>
+    <div class="step-row">
+      <div class="step">
+        <div class="num">1</div>
+        <h4>上传音频</h4>
+        <p>选择一段你想重新演绎的音乐或人声</p>
+      </div>
+      <div class="step">
+        <div class="num">2</div>
+        <h4>AI 转谱</h4>
+        <p>云端自动识别音符，生成乐谱并预览</p>
+      </div>
+      <div class="step">
+        <div class="num">3</div>
+        <h4>风格演绎</h4>
+        <p>挑选曲风与乐器，生成全新版本的演绎</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="changelog">
+  <div class="container">
+    <h2 class="section-title">更新说明</h2>
+    <div class="log-card">
+      <h3>最新版本 <span class="ver-tag" id="ver-tag">v--</span></h3>
+      <ul id="release-notes"><li>加载中…</li></ul>
+    </div>
+  </div>
+</section>
+
+<footer>
+  <div class="container">
+    音乐AI换风格 · AI 音乐转谱与风格重制工具<br>
+    联系邮箱：<a href="mailto:support@muse-ai.app">support@muse-ai.app</a>
+  </div>
+</footer>
+
+<div id="toast"></div>
+
+<script>
+  var APK_PATH = 'http://47.94.109.161:8001/apk/latest.apk';
+
+  function showToast(msg) {
+    var t = document.getElementById('toast');
+    t.textContent = msg;
+    t.classList.add('show');
+    clearTimeout(t._timer);
+    t._timer = setTimeout(function(){ t.classList.remove('show'); }, 2600);
+  }
+
+  function downloadAndroid() {
+    window.location.href = APK_PATH;
+  }
+
+  function iosComingSoon() {
+    showToast('iOS 版本正在开发中，敬请期待 🎵');
+  }
+
+  // 读取 update.json，展示版本信息
+  fetch('update.json', { cache: 'no-store' })
+    .then(function(r){ return r.json(); })
+    .then(function(d) {
+      var v = d.latest_version || '--';
+      document.getElementById('ver-badge').textContent = 'v' + v;
+      document.getElementById('ver-line').textContent = 'v' + v;
+      document.getElementById('ver-tag').textContent = 'v' + v;
+      var size = document.getElementById('size-line');
+      if (d.apk_size_mb) size.textContent = d.apk_size_mb + ' MB';
+      var ul = document.getElementById('release-notes');
+      ul.innerHTML = '';
+      (d.release_notes || []).forEach(function(n) {
+        var li = document.createElement('li');
+        li.textContent = n;
+        ul.appendChild(li);
+      });
+    })
+    .catch(function(){
+      document.getElementById('ver-badge').textContent = 'v0.4.0';
+      document.getElementById('ver-line').textContent = 'v0.4.0';
+      document.getElementById('ver-tag').textContent = 'v0.4.0';
+    });
+</script>
+</body>
+</html>
