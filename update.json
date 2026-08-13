@@ -1,0 +1,15 @@
+{
+  "app_name": "音乐AI换风格",
+  "latest_version": "0.4.0",
+  "version_code": 7,
+  "update_type": "force",
+  "download_url": "http://47.94.109.161:8001/apk/latest.apk",
+  "apk_size_mb": 58,
+  "release_notes": [
+    "新增：登录后自动检查更新，有新版将强制提示升级",
+    "应用更名：音乐AI换风格",
+    "优化：转谱失败与未检测到音符提示更清晰",
+    "优化：渲染失败但转谱成功时可单独下载 MIDI 并重新渲染",
+    "优化：全新应用图标"
+  ]
+}
