@@ -69,14 +69,6 @@
   }
   .hero h1 { font-size: 40px; font-weight: 800; letter-spacing: 1px; }
   .hero .sub { margin-top: 14px; font-size: 18px; color: var(--text-dim); max-width: 620px; margin-left: auto; margin-right: auto; }
-  .hero .badge {
-    display: inline-block; margin-top: 20px;
-    background: rgba(61,123,255,0.16); border: 1px solid rgba(61,123,255,0.4);
-    color: var(--accent-light); border-radius: 999px;
-    padding: 6px 16px; font-size: 13px;
-  }
-  .hero .badge b { color: var(--accent-light); }
-
   /* ===== 下载区 ===== */
   .downloads { display: flex; justify-content: center; gap: 16px; margin: 40px 0 8px; flex-wrap: wrap; }
   .dl-btn {
@@ -130,23 +122,6 @@
   .step h4 { font-size: 16px; margin-bottom: 6px; }
   .step p { font-size: 13px; color: var(--text-dim); }
 
-  /* ===== 更新信息 ===== */
-  .changelog { padding: 0 0 64px; }
-  .log-card {
-    background: var(--card-bg); border: 1px solid var(--card-border);
-    border-radius: var(--radius); padding: 26px;
-    max-width: 640px; margin: 0 auto;
-  }
-  .log-card h3 { font-size: 17px; margin-bottom: 12px; }
-  .log-card ul { padding-left: 20px; color: var(--text-dim); font-size: 14px; }
-  .log-card li { margin-bottom: 6px; }
-  .log-card .ver-tag {
-    display: inline-block; background: rgba(61,123,255,0.2);
-    color: var(--accent-light); border-radius: 6px;
-    font-size: 12px; padding: 2px 8px; margin-left: 8px;
-    vertical-align: middle;
-  }
-
   /* ===== 页脚 ===== */
   footer { border-top: 1px solid rgba(255,255,255,0.08); padding: 28px 0; text-align: center; color: var(--text-dim); font-size: 13px; }
   footer a { color: var(--accent-light); text-decoration: none; }
@@ -188,7 +163,6 @@
     <div class="hero-icon">♪</div>
     <h1>音乐AI换风格</h1>
     <p class="sub">上传一段音频，AI 自动识别音符、一键生成乐谱，再用你喜欢的风格重新演绎——民谣、电子、爵士、钢琴独奏，都由你定。</p>
-    <div class="badge">最新版本 <b id="ver-badge">v--</b></div>
 
     <div class="downloads">
       <button class="dl-btn dl-android" id="btn-android" onclick="downloadAndroid()">
@@ -204,7 +178,7 @@
         </span>
       </button>
     </div>
-    <div class="version-line">当前版本 <b id="ver-line">v--</b> · <span id="size-line">--</span> · 安卓用户点击上方按钮即可下载安装</div>
+    <div class="version-line">安卓用户点击上方按钮即可下载安装</div>
   </div>
 </section>
 
@@ -259,20 +233,10 @@
   </div>
 </section>
 
-<section class="changelog">
-  <div class="container">
-    <h2 class="section-title">更新说明</h2>
-    <div class="log-card">
-      <h3>最新版本 <span class="ver-tag" id="ver-tag">v--</span></h3>
-      <ul id="release-notes"><li>加载中…</li></ul>
-    </div>
-  </div>
-</section>
-
 <footer>
   <div class="container">
     音乐AI换风格 · AI 音乐转谱与风格重制工具<br>
-    联系邮箱：<a href="mailto:support@muse-ai.app">support@muse-ai.app</a>
+    联系邮箱：<a href="mailto:3953824302@qq.com">3953824302@qq.com</a> · 客服电话：<a href="tel:18514251014">18514251014</a>
   </div>
 </footer>
 
@@ -296,30 +260,6 @@
   function iosComingSoon() {
     showToast('iOS 版本正在开发中，敬请期待 🎵');
   }
-
-  // 读取 update.json，展示版本信息
-  fetch('update.json', { cache: 'no-store' })
-    .then(function(r){ return r.json(); })
-    .then(function(d) {
-      var v = d.latest_version || '--';
-      document.getElementById('ver-badge').textContent = 'v' + v;
-      document.getElementById('ver-line').textContent = 'v' + v;
-      document.getElementById('ver-tag').textContent = 'v' + v;
-      var size = document.getElementById('size-line');
-      if (d.apk_size_mb) size.textContent = d.apk_size_mb + ' MB';
-      var ul = document.getElementById('release-notes');
-      ul.innerHTML = '';
-      (d.release_notes || []).forEach(function(n) {
-        var li = document.createElement('li');
-        li.textContent = n;
-        ul.appendChild(li);
-      });
-    })
-    .catch(function(){
-      document.getElementById('ver-badge').textContent = 'v0.4.0';
-      document.getElementById('ver-line').textContent = 'v0.4.0';
-      document.getElementById('ver-tag').textContent = 'v0.4.0';
-    });
 </script>
 </body>
 </html>
